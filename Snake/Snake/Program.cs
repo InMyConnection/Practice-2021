@@ -35,10 +35,6 @@ namespace Snake
                     food.Draw();
                     snake.WriteCountOfFood();
                 }
-                else
-                    snake.Move();
-
-                Thread.Sleep(100);
 
                 if (Console.KeyAvailable)
                 {
