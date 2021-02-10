@@ -1,0 +1,178 @@
+@font-face {
+	font-family: 'Signika';
+	src: local('Signika'),
+		url(Signika/static/Signika-Regular.ttf);
+    font-weight: normal;
+    font-style: normal; 
+}
+
+@font-face {
+	font-family: 'Lato';
+	src: local('Lato'),
+		url(Lato/Lato-Regular.ttf);
+    font-weight: normal;
+    font-style: normal; 
+}
+
+@font-face {
+	font-family: 'Signika-Negative';
+	src: local(Signika-Negative),
+		url(Signika_Negative/SignikaNegative-Regular.ttf);
+    font-weight: normal;
+    font-style: normal; 
+}
+
+body {
+    padding: 75px 84px 0 73px;
+    width: 1511px;
+    height: 1716px;
+    background-color: #EAEDF1;
+    font-family: 'Signika';
+    box-sizing: border-box;
+}
+
+h1 {
+    font-weight: normal;
+    color: #33495F;
+}
+
+h2 {
+    font-weight: normal;
+    color: #33495F;
+}
+
+h3 {
+    font-weight: normal;
+    color: #33495F;
+}
+
+header {
+    display: grid;
+    grid-template-columns: 432px 824px;
+    column-gap: 91px;
+}
+
+.white {
+    background-color: white;
+    border-radius: 2px;
+}
+
+.name {
+    grid-column-start: 1;
+    width: 432px;
+    height: 296px;
+    display: grid;
+    grid-template-rows: 216px 80px;
+    
+}
+
+.avatar {
+    grid-row-start: 1;
+    
+}
+
+.avatar img {
+    border-radius: 50%;
+    float: left;
+    margin: 35px 41px auto 27px;
+}
+
+.avatar h2 {
+    float: left;
+    font-size: 30px;
+    margin-top: 94px;
+    line-height: 0%;
+}
+
+.avatar p{
+    float: left;
+    font-size: 18px;
+    color: #586879;
+    margin-top: -5px;
+    font-family: 'Lato';
+}
+
+.characteristic {
+    grid-row-start: 2;
+    font-size: 0;
+
+}
+
+.char {
+    display: inline-block;
+    height: 100%;
+    width: 25%;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.char img {
+    margin-top: 20px;
+    margin-bottom: -10px;
+}
+
+.char p {
+    vertical-align: top;
+}
+
+.age {
+    background-color: #16C4EC;
+}
+
+.language {
+    background-color: #FA5351;
+}
+
+.car {
+    background-color: #10CDC1;
+}
+
+.smoke {
+    background-color: #33495F;
+}
+
+.profession {
+    grid-column-start: 2;
+    width: 824px;
+    height: 296px;
+    display: grid;
+    grid-template-columns: 430px 277px;
+    column-gap: 79px;
+}
+
+.prof {
+    grid-column-start: 1;
+}
+
+.social {
+    grid-column-start: 1;
+}
+
+.contacts {
+    grid-column-start: 2;
+}
+
+.prof h1 {
+    font-size: 40px;
+    padding: 39px 0 0 28px;
+    line-height: 0%;
+    letter-spacing: -1px;
+}
+
+.prof p {
+    padding: 4px 0 0 32px;
+    font-family: 'Lato';
+    font-size: 18px;
+    line-height: 170%;
+    text-align: justify;
+}
+
+.prof span {
+    color: #16C4EC;
+}
+
+.contacts a {
+    color: #FA5351;
+}
