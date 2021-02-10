@@ -216,7 +216,6 @@ main {
 .job-title-post {
     color: #10BFAA;
     font-size: 20px;
-
 }
 
 main ul{
@@ -224,4 +223,28 @@ main ul{
     padding: 9px 0 0 30px;
     list-style-image: url(../images/marker.png);
     line-height: 218%;
+}
+
+.place {
+    font-family: 'Lato';
+    font-size: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: baseline;
+    margin: 34px -10px 0 -27px;
+}
+
+button {
+    width: 219px;
+    height: 39px;
+    font-family: 'Lato';
+    font-size: 16px;
+    color: white;
+    background: #16C4EC;
+    border: none;
+    border-radius: 2px;
+}
+
+.place img {
+    margin-right: 10px;
 }
