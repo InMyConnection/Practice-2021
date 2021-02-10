@@ -23,27 +23,26 @@
 }
 
 body {
-    padding: 75px 84px 0 73px;
+    padding: 75px 0 0 73px;
     width: 1511px;
     height: 1716px;
     background-color: #EAEDF1;
     font-family: 'Signika';
     box-sizing: border-box;
+    color: #33495F;
+    font-weight: normal;
 }
 
 h1 {
     font-weight: normal;
-    color: #33495F;
 }
 
 h2 {
     font-weight: normal;
-    color: #33495F;
 }
 
 h3 {
     font-weight: normal;
-    color: #33495F;
 }
 
 header {
@@ -59,11 +58,9 @@ header {
 
 .name {
     grid-column-start: 1;
-    width: 432px;
     height: 296px;
     display: grid;
     grid-template-rows: 216px 80px;
-    
 }
 
 .avatar {
@@ -111,6 +108,7 @@ header {
 .char img {
     margin-top: 20px;
     margin-bottom: -10px;
+    box-sizing: border-box;
 }
 
 .char p {
@@ -135,7 +133,6 @@ header {
 
 .profession {
     grid-column-start: 2;
-    width: 824px;
     height: 296px;
     display: grid;
     grid-template-columns: 430px 277px;
@@ -148,10 +145,26 @@ header {
 
 .social {
     grid-column-start: 1;
+    padding-left: 26px;
+    display: inline-block;
+    position: relative;
+    letter-spacing: 43px;
+    margin-top: -34px;
 }
 
 .contacts {
     grid-column-start: 2;
+    font-family: 'Lato';
+    font-size: 22px;
+    margin-top: 82px;
+    margin-left: 2px;
+    margin-bottom: 70px;
+    border-bottom: 1px solid #788695;
+}
+
+.contacts a {
+    letter-spacing: 2px;
+    text-decoration: none;
 }
 
 .prof h1 {
@@ -175,4 +188,40 @@ header {
 
 .contacts a {
     color: #FA5351;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 636px 89px 563 px;
+    padding-top: 36px;
+}
+
+.job1 {
+    grid-column: 1/2;
+    width: 636px;
+    height: 340px;
+    padding: 9px 0 0 23px;
+    box-sizing: border-box;
+}
+
+.job-title-main {
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.job-title-note {
+    font-family: 'Lato';
+}
+
+.job-title-post {
+    color: #10BFAA;
+    font-size: 20px;
+
+}
+
+main ul{
+    font-family: 'Lato';
+    padding: 9px 0 0 30px;
+    list-style-image: url(../images/marker.png);
+    line-height: 218%;
 }
