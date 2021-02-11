@@ -388,6 +388,28 @@ button:hover {
 .hobby {
     height: 401px;
     width: 627px;
+    border-radius: 0;
+    display: grid;
+    grid-template-rows: 137px auto;
+}
+
+.passion {
+    grid-row: 1/2;
+    display: flex;
+    justify-content: space-around;
+    font-size: 14px;
+    padding: 0 3px 0 11px;
+    text-align: center;
+    align-items: flex-end;
+}
+  
+.itemhobby img {
+    display: block;
+    border-radius: 50%;
+}
+
+.progressbar {
+    grid-row-start: 2;
 }
 
 footer {
