@@ -156,9 +156,8 @@ header {
     grid-column-start: 1;
     padding-left: 26px;
     display: inline-block;
-    position: relative;
-    letter-spacing: 43px;
-    margin-top: -34px;
+    letter-spacing: 47px;
+    margin-top: -43px;
 }
 
 .contacts {
@@ -167,7 +166,7 @@ header {
     font-size: 22px;
     margin-top: 82px;
     margin-left: 2px;
-    margin-bottom: 70px;
+    margin-bottom: 78px;
     border-bottom: 1px solid #788695;
 }
 
@@ -203,6 +202,33 @@ main {
     display: grid;
     grid-template-columns: 636px 58px 627 px;
     padding-top: 36px;
+    position: relative;
+}
+
+main::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 97%;
+    background-color: #DBE1E8;
+    left: 672px;
+    top: 36px;
+}
+
+main::after {
+    content: "2004";
+    position: absolute;
+    width: 72px;
+    height: 34px;
+    background-color: #DBE1E8;
+    color: white;
+    font-family: 'Lato';
+    font-size: 23px;
+    text-align: center;
+    line-height: 140%;
+    left: 639px;
+    bottom: -6px;
+    border-radius: 2px;
 }
 
 .work {
@@ -225,6 +251,54 @@ main {
     width: 636px;
     padding: 9px 0 0 23px;
     box-sizing: border-box;
+    position: relative;
+}
+
+.job::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 10px;
+    right: -49px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.study {
+    position: relative;
+}
+
+.study::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color:  #DBE1E8;
+    border-radius: 10px;
+    left: -55px;
+    transform: translateY(-50%);
+}
+
+.study1::before {
+    top: 270px;
+}
+
+.study2::before {
+    top: 273px;
+}
+
+.line::before {
+    top: 268px;
+}
+
+.study3::before {
+    top: 447px;
+}
+
+.study4::before {
+    top: 449px;
 }
 
 .job1 {
@@ -276,6 +350,10 @@ main .job2 ul{
 
 .job3 {
     height: 170px;
+}
+
+.job3 .place {
+    margin: 28px -10px 0 -25px;
 }
 
 .job4 {
@@ -343,16 +421,18 @@ button:hover {
     color: #16C4EC;
 }
 
-.study button {
-    background: #10CDC1;
-}
-
 .study .place {
     font-family: 'Lato';
     font-size: 13px;
     display: grid;
     grid-template-columns: 140px 220px 219px;
-    align-items: end;
+    align-items: baseline;
+    margin-top: 30px;
+}
+
+.study button {
+    background: #10CDC1;
+    grid-column-start: 3;
 }
 
 .study .place span:first-child {
@@ -372,8 +452,16 @@ button:hover {
     height: 128px;
 }
 
+.study3 .place {
+    margin-top: -4px;
+}
+
 .study4 {
     height: 128px;
+}
+
+.study4 .place {
+    margin-top: -4px;
 }
 
 .line  {
@@ -456,7 +544,7 @@ button:hover {
     right: -17px;
 }
 
-.progress-value:after{
+.progress-value::after{
     content: "";
     border-top: 4px solid #34495E;
     border-left: 4px solid transparent;
@@ -476,7 +564,7 @@ footer {
     font-size: 18px;
 }
 
-footer p:before {
+footer p::before {
     content: "“";
     font-size: 120px;
     color: #CED4DD;
@@ -487,7 +575,7 @@ footer p:before {
     font-style: normal;
 }
 
-footer p:after {
+footer p::after {
     content:"”";
     font-size: 120px;
     color: #CED4DD;
