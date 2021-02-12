@@ -14,14 +14,6 @@
     font-style: normal; 
 }
 
-@font-face {
-	font-family: 'Signika-Negative';
-	src: local(Signika-Negative),
-		url(Signika_Negative/SignikaNegative-Regular.ttf);
-    font-weight: normal;
-    font-style: normal; 
-}
-
 body {
     padding: 75px 49px 0 73px;
     width: 1511px;
@@ -33,19 +25,7 @@ body {
     font-weight: normal;
 }
 
-h1 {
-    font-weight: normal;
-}
-
-h2 {
-    font-weight: normal;
-}
-
-h3 {
-    font-weight: normal;
-}
-
-h4 {
+h1, h2, h3, h4 {
     font-weight: normal;
 }
 
@@ -74,7 +54,6 @@ header {
 
 .avatar {
     grid-row-start: 1;
-    
 }
 
 .avatar img {
@@ -101,7 +80,6 @@ header {
 .characteristic {
     grid-row-start: 2;
     font-size: 0;
-
 }
 
 .char {
@@ -144,8 +122,8 @@ header {
     grid-column-start: 2;
     height: 296px;
     display: grid;
-    grid-template-columns: 430px 277px;
-    column-gap: 79px;
+    grid-template-columns: 434px 277px;
+    column-gap: 75px;
 }
 
 .prof {
@@ -173,6 +151,7 @@ header {
 .contacts a {
     letter-spacing: 2px;
     text-decoration: none;
+    color: #FA5351;
 }
 
 .prof h1 {
@@ -194,10 +173,6 @@ header {
     color: #16C4EC;
 }
 
-.contacts a {
-    color: #FA5351;
-}
-
 main {
     display: grid;
     grid-template-columns: 636px 58px 627 px;
@@ -205,6 +180,7 @@ main {
     position: relative;
 }
 
+/* Создание вертикальной линии таймлайна */
 main::before {
     content: "";
     position: absolute;
@@ -254,6 +230,7 @@ main::after {
     position: relative;
 }
 
+/* Добавление точек на таймлайн */
 .job::before {
     content: "";
     position: absolute;
@@ -264,41 +241,6 @@ main::after {
     right: -49px;
     top: 50%;
     transform: translateY(-50%);
-}
-
-.study {
-    position: relative;
-}
-
-.study::before {
-    content: "";
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color:  #DBE1E8;
-    border-radius: 10px;
-    left: -55px;
-    transform: translateY(-50%);
-}
-
-.study1::before {
-    top: 270px;
-}
-
-.study2::before {
-    top: 273px;
-}
-
-.line::before {
-    top: 268px;
-}
-
-.study3::before {
-    top: 447px;
-}
-
-.study4::before {
-    top: 449px;
 }
 
 .job1 {
@@ -344,19 +286,11 @@ main .job2 ul{
     margin-top: -5px;
 }
 
-.job2 .place {
+.job2 .place, .job3 .place {
     margin: 28px -10px 0 -25px;
 }
 
-.job3 {
-    height: 170px;
-}
-
-.job3 .place {
-    margin: 28px -10px 0 -25px;
-}
-
-.job4 {
+.job3, .job4 {
     height: 170px;
 }
 
@@ -375,11 +309,7 @@ button {
     border-radius: 2px;
 }
 
-.job3 button {
-    background: #B0BBCA;
-}
-
-.job4 button {
+.job3 button, .job4 button {
     background: #B0BBCA;
 }
 
@@ -397,6 +327,39 @@ button:hover {
     height: 170px;
     padding: 7px 0 0 27px;
     box-sizing: border-box;
+    position: relative;
+}
+
+/* Добавление точек на таймлайн */
+.study::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color:  #DBE1E8;
+    border-radius: 10px;
+    left: -55px;
+    transform: translateY(-50%);
+}
+
+.study1::before {
+    top: 270px;
+}
+
+.study2::before {
+    top: 273px;
+}
+
+.line::before {
+    top: 268px;
+}
+
+.study3::before {
+    top: 447px;
+}
+
+.study4::before {
+    top: 449px;
 }
 
 .study-title-main {
@@ -413,11 +376,7 @@ button:hover {
     font-size: 18px;
 }
 
-.study1 .study-title-post {
-    color: #16C4EC;
-}
-
-.study2 .study-title-post {
+.study1 .study-title-post, .study2 .study-title-post {
     color: #16C4EC;
 }
 
@@ -448,19 +407,11 @@ button:hover {
     justify-self: end;
 }
 
-.study3 {
+.study3, .study4 {
     height: 128px;
 }
 
-.study3 .place {
-    margin-top: -4px;
-}
-
-.study4 {
-    height: 128px;
-}
-
-.study4 .place {
+.study3 .place, .study4 .place {
     margin-top: -4px;
 }
 
