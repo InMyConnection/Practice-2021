@@ -47,7 +47,7 @@ resources.onReady(init);
 
 var player = {
     pos: [0, 0],
-    sprite: new Sprite('img/sprites.png', [0, 0], [39, 39], 16, [0, 1])
+    sprite: new Sprite('img/sprites.png', [0, 6], [39, 24], 16, [0, 1])
 };
 
 var bullets = [];
