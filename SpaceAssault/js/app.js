@@ -47,9 +47,10 @@ resources.onReady(init);
 
 var player = {
     pos: [0, 0],
-    sprite: new Sprite('img/sprites.png', [0, 0], [39, 39], 16, [0, 1])
+    sprite: new Sprite('img/sprites.png', [0, 6], [39, 24], 16, [0, 1])
 };
 
+var megaliths = [];
 var bullets = [];
 var enemies = [];
 var explosions = [];
@@ -87,6 +88,8 @@ function update(dt) {
 };
 
 function handleInput(dt) {
+    var currentPositionOfPlayer = player.pos.slice();
+    
     if(input.isDown('DOWN') || input.isDown('s')) {
         player.pos[1] += playerSpeed * dt;
     }
@@ -101,6 +104,15 @@ function handleInput(dt) {
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
         player.pos[0] += playerSpeed * dt;
+    }
+
+    for(var i=0; i<megaliths.length; i++) {
+        var pos = megaliths[i].pos;
+        var size = megaliths[i].sprite.size;
+
+        if(boxCollides(pos, size, player.pos, player.sprite.size)) {
+            player.pos = currentPositionOfPlayer;
+        }
     }
 
     if(input.isDown('SPACE') &&
@@ -126,6 +138,10 @@ function handleInput(dt) {
 function updateEntities(dt) {
     player.sprite.update(dt);
 
+    for(var i=0; i<megaliths.length; i++) {
+        megaliths[i].sprite.update(dt);
+    }
+
     for(var i=0; i<bullets.length; i++) {
         var bullet = bullets[i];
 
@@ -144,7 +160,15 @@ function updateEntities(dt) {
     }
 
     for(var i=0; i<enemies.length; i++) {
-        enemies[i].pos[0] -= enemySpeed * dt;
+        var enemy = enemies[i];
+
+        switch(enemy.dir) {
+        case 'up': enemy.pos[1] -= enemySpeed * dt; break;
+        case 'down': enemy.pos[1] += enemySpeed * dt; break;
+        default:
+            enemy.pos[0] -= enemySpeed * dt;
+        }
+        
         enemies[i].sprite.update(dt);
 
         if(enemies[i].pos[0] + enemies[i].sprite.size[0] < 0) {
@@ -204,12 +228,48 @@ function checkCollisions() {
                 });
 
                 bullets.splice(j, 1);
-                break;
             }
         }
 
         if(boxCollides(pos, size, player.pos, player.sprite.size)) {
             gameOver();
+        }
+    }
+
+    for(var i=0; i<megaliths.length; i++) {
+        var pos = megaliths[i].pos;
+        var size = megaliths[i].sprite.size;
+
+        for(var j=0; j<bullets.length; j++) {
+            var pos2 = bullets[j].pos;
+            var size2 = bullets[j].sprite.size;
+
+            if(boxCollides(pos, size, pos2, size2)) {
+                bullets.splice(j, 1);
+            }
+        }
+    }
+
+    for(var i=0; i<enemies.length; i++) {
+        var pos = enemies[i].pos;
+        var size2 = enemies[i].sprite.size;
+
+        for(var j=0; j<megaliths.length; j++) {
+            var pos2 = megaliths[j].pos;
+            var size2 = megaliths[j].sprite.size;
+
+            if(boxCollides(pos, size, pos2, size2)) {
+                if (enemies[i].dir === 'down' || pos2[1] < pos[1] - size[1]/3) {
+                    enemies[i].dir = 'down';
+                }
+                else {
+                    enemies[i].dir = 'up';
+                }
+                break;
+            }
+            else {
+                enemies[i].dir = 'horizontal';
+            }
         }
     }
 }
@@ -238,6 +298,7 @@ function render() {
         renderEntity(player);
     }
 
+    renderEntities(megaliths);
     renderEntities(bullets);
     renderEntities(enemies);
     renderEntities(explosions);
@@ -271,4 +332,37 @@ function reset() {
     enemies = [];
     bullets = [];
     player.pos = [50, canvas.height / 2];
+    
+    countOfMegaliths = Math.floor(3 + Math.random() * 3);
+    for(var i=0; i<countOfMegaliths; i++) {
+        if (Math.random() < 0.5) {
+            megaliths.push({
+                pos: getPosition( [56, 54] ),
+                sprite: new Sprite('img/sprites.png', [2, 212], [56, 54])
+            });
+        }
+        else {
+            megaliths.push({
+                pos: getPosition( [49, 43] ),
+                sprite: new Sprite('img/sprites.png', [4, 273], [49, 43])
+            });
+        }
+    }
+}
+
+function getPosition(size) {
+    var position = getRandomPosition();
+    while (true) {
+        if (!boxCollides(position, size, player.pos, player.sprite.size)) {
+            break;
+        }
+        else {
+            position = getRandomPosition();
+        }
+    }
+    return position;
+}
+
+function getRandomPosition() {
+    return [40 + Math.random() * (canvas.width - 120), 40 + Math.random() * (canvas.height - 120)];
 };
