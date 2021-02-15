@@ -32,6 +32,13 @@ canvas {
     font-size: 2em;
 }
 
+#scoreOfMannas {
+    float: right;
+    margin-right: 100px;
+    color: yellow;
+    font-size: 2em;
+}
+
 .key {
     color: #aaffdd;
 }
