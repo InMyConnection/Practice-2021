@@ -11,11 +11,11 @@ namespace Tanks.Entities
 		public Direction direction;
 		Random random = new Random();
 
-		public Tank()
+		public Tank(Point pos, int speed) : base(pos)
 		{
-			Speed = 1;
+			Speed = speed;
 			GetDirection();
-			this.Position = GetRandomPosition();
+			Name = "Tank";
 		}
 
 		public void Move()
@@ -47,10 +47,11 @@ namespace Tanks.Entities
 			direction = (Direction)random.Next(0, 4);
 		}
 
-		public Point GetRandomPosition()
+		public bool Fire()
         {
-			Point position = new Point((int)random.Next(0, 340), (int)random.Next(0, 200));
-			return position;
+			if (random.Next(0, 100) > 98)
+				return true;
+			return false;
         }
 
 		public void Render(Graphics g)
@@ -60,17 +61,24 @@ namespace Tanks.Entities
 
 		public void Rotate()
 		{
-			if (direction == Direction.LEFT)
-				direction = Direction.RIGHT;
-			
-			if (direction == Direction.RIGHT)
-				direction = Direction.LEFT;
-			
-			if (direction == Direction.UP)
-				direction = Direction.DOWN;
-			
-			if (direction == Direction.DOWN)
-				direction = Direction.UP;
+			switch (direction)
+			{
+				case Direction.LEFT:
+					direction = Direction.RIGHT;
+					break;
+
+				case Direction.RIGHT:
+					direction = Direction.LEFT;
+					break;
+
+				case Direction.UP:
+					direction = Direction.DOWN;
+					break;
+
+				case Direction.DOWN:
+					direction = Direction.UP;
+					break;
+			}
 		}
 	}
 }

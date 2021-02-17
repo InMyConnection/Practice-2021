@@ -10,11 +10,11 @@ namespace Tanks.Entities
 		public int Speed;
 		public Direction direction;
 		Random random = new Random();
-		public Kolobok(Point pos)
+		public Kolobok(Point pos, int speed) : base(pos)
 		{
-			Speed = 1;
+			Speed = speed;
 			direction = (Direction)random.Next(0, 4);
-			this.Position = pos;
+			Name = "Player";
 		}
 
 		public void Move()
