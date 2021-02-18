@@ -10,13 +10,15 @@ namespace Tanks.Entities
         public int Speed;
         public Direction direction;
 
-        public Bullet(Point pos, Direction dir, int speed) : base(pos)
+        public Bullet(int x, int y, Direction dir, int speed) : base(x, y)
         {
             Image = new Bitmap(@"Images\Bullet.png");
             Speed = 2 * speed;
             direction = dir;
-			Dimension = new Size(6, 6);
-			Position = new Point(pos.X + 17, pos.Y + 17);
+			Width = 6;
+			Height = 6;
+			X = x + 17;
+			Y = y + 17;
 			Name = "Bullet";
         }
 
@@ -24,25 +26,25 @@ namespace Tanks.Entities
 		{
 			if (direction == Direction.LEFT)
 			{
-				Position.X -= Speed;
+				X -= Speed;
 			}
 			if (direction == Direction.RIGHT)
 			{
-				Position.X += Speed;
+				X += Speed;
 			}
 			if (direction == Direction.UP)
 			{
-				Position.Y -= Speed;
+				Y -= Speed;
 			}
 			if (direction == Direction.DOWN)
 			{
-				Position.Y += Speed;
+				Y += Speed;
 			}
 		}
 
 		public void Render(Graphics g)
 		{
-			g.DrawImage(Image, new Point(Position.X, Position.Y));
+			g.DrawImage(Image, X, Y);
 		}
 	}
 }

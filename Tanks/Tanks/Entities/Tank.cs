@@ -11,7 +11,7 @@ namespace Tanks.Entities
 		public Direction direction;
 		Random random = new Random();
 
-		public Tank(Point pos, int speed) : base(pos)
+		public Tank(int x, int y, int speed) : base(x, y)
 		{
 			Speed = speed;
 			GetDirection();
@@ -22,22 +22,22 @@ namespace Tanks.Entities
 		{
 			if (direction == Direction.LEFT)
 			{
-				Position.X -= Speed;
+				X -= Speed;
 				Image = new Bitmap(@"Images\Tank\Left.png");
 			}
 			if (direction == Direction.RIGHT)
 			{
-				Position.X += Speed;
+				X += Speed;
 				Image = new Bitmap(@"Images\Tank\Right.png");
 			}
 			if (direction == Direction.UP)
 			{
-				Position.Y -= Speed;
+				Y -= Speed;
 				Image = new Bitmap(@"Images\Tank\Up.png");
 			}
 			if (direction == Direction.DOWN)
 			{
-				Position.Y += Speed;
+				Y += Speed;
 				Image = new Bitmap(@"Images\Tank\Down.png");
 			}
 		}
@@ -56,7 +56,7 @@ namespace Tanks.Entities
 
 		public void Render(Graphics g)
 		{
-			g.DrawImage(Image, new Point(Position.X, Position.Y));
+			g.DrawImage(Image, X, Y);
 		}
 
 		public void Rotate()

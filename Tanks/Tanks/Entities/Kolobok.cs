@@ -10,7 +10,7 @@ namespace Tanks.Entities
 		public int Speed;
 		public Direction direction;
 		Random random = new Random();
-		public Kolobok(Point pos, int speed) : base(pos)
+		public Kolobok(int x, int y, int speed) : base(x, y)
 		{
 			Speed = speed;
 			direction = (Direction)random.Next(0, 4);
@@ -21,30 +21,29 @@ namespace Tanks.Entities
 		{
 			if (direction == Direction.LEFT)
 			{
-				Position.X -= Speed;
+				X -= Speed;
 				Image = new Bitmap(@"Images\Kolobok\Left.png");
 			}
 			if (direction == Direction.RIGHT)
 			{
-				Position.X += Speed;
+				X += Speed;
 				Image = new Bitmap(@"Images\Kolobok\Right.png");
 			}
 			if (direction == Direction.UP)
 			{
-				Position.Y -= Speed;
+				Y -= Speed;
 				Image = new Bitmap(@"Images\Kolobok\Up.png");
 			}
 			if (direction == Direction.DOWN)
 			{
-				Position.Y += Speed;
+				Y += Speed;
 				Image = new Bitmap(@"Images\Kolobok\Down.png");
 			}
 		}
 
 		public void Render(Graphics g)
 		{
-			if (Image != null)
-				g.DrawImage(Image, new Point(Position.X, Position.Y));
+			g.DrawImage(Image, X, Y);
 		}
 	}
 }

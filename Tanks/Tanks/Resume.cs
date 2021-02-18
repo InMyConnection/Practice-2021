@@ -8,16 +8,11 @@ using System.Windows.Forms;
 
 namespace Tanks
 {
-    public partial class Form2 : Form
+    public partial class Resume : Form
     {
-        public Form2()
+        public Resume()
         {
             InitializeComponent();
-        }
-
-        private void ResumeLoad(object sender, EventArgs e)
-        {
-            dataGridView1.DataSource = Form1.entities;
         }
     }
 }

@@ -7,15 +7,16 @@ namespace Tanks.Entities
 {
     public class BrickWall : Entity
     {
-        public BrickWall(Point pos, Size dim) : base(pos)
+        public BrickWall(int x, int y, int width, int height) : base(x, y)
         {
-            Dimension = dim;
+            Width = width;
+            Height = height;
             Name = "Wall";
         }
 
         public void Render(Graphics g)
         {
-            g.FillRectangle(Brushes.Orange, Position.X, Position.Y, Dimension.Width, Dimension.Height);
+            g.FillRectangle(Brushes.Orange, X, Y, Width, Height);
         }
 
     }

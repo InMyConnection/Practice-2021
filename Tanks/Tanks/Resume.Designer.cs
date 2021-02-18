@@ -1,7 +1,7 @@
 ﻿
 namespace Tanks
 {
-    partial class Form2
+    partial class Resume
     {
         /// <summary>
         /// Required designer variable.
@@ -54,18 +54,21 @@ namespace Tanks
             this.Column1.DataPropertyName = "Name";
             this.Column1.HeaderText = "Entity";
             this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
             // 
             // Column2
             // 
             this.Column2.DataPropertyName = "X";
             this.Column2.HeaderText = "Point X";
             this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
             // 
             // Column3
             // 
             this.Column3.DataPropertyName = "Y";
             this.Column3.HeaderText = "Point Y";
             this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
             // 
             // Form2
             // 
@@ -75,7 +78,6 @@ namespace Tanks
             this.Controls.Add(this.dataGridView1);
             this.Name = "Form2";
             this.Text = "Resume";
-            this.Load += new System.EventHandler(this.ResumeLoad);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
@@ -83,7 +85,7 @@ namespace Tanks
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        public System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;

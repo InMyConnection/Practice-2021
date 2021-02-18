@@ -1,7 +1,7 @@
 ﻿
 namespace Tanks
 {
-    partial class Form1
+    partial class Game
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,18 +30,19 @@ namespace Tanks
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.primaryTimer = new System.Windows.Forms.Timer(this.components);
+            this.timerOfGame = new System.Windows.Forms.Timer(this.components);
             this.txtScore = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.tankDirectionSwitch = new System.Windows.Forms.Timer(this.components);
+            this.timerTankDirectionSwitchAndResumeUpdate = new System.Windows.Forms.Timer(this.components);
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // primaryTimer
+            // timerOfGame
             // 
-            this.primaryTimer.Interval = 15;
-            this.primaryTimer.Tick += new System.EventHandler(this.primaryTimer_Tick);
+            this.timerOfGame.Interval = 15;
+            this.timerOfGame.Tick += new System.EventHandler(this.timerOfGame_Tick);
             // 
             // txtScore
             // 
@@ -74,23 +75,35 @@ namespace Tanks
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
-            // tankDirectionSwitch
+            // timerTankDirectionSwitchAndResumeUpdate
             // 
-            this.tankDirectionSwitch.Interval = 1500;
-            this.tankDirectionSwitch.Tick += new System.EventHandler(this.tankDirectionSwitch_Tick);
+            this.timerTankDirectionSwitchAndResumeUpdate.Interval = 1500;
+            this.timerTankDirectionSwitchAndResumeUpdate.Tick += new System.EventHandler(this.timerTankDirectionSwitchAndResumeUpdate_Tick);
             // 
-            // Form1
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Black;
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(422, 200);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(55, 45);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "  W\r\nASD \r\nB - shoot";
+            // 
+            // Game
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(545, 376);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.txtScore);
             this.KeyPreview = true;
-            this.Name = "Form1";
+            this.Name = "Game";
             this.Text = "Battle City";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.keyIsDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -100,11 +113,12 @@ namespace Tanks
         }
 
         #endregion
-        private System.Windows.Forms.Timer primaryTimer;
+        private System.Windows.Forms.Timer timerOfGame;
         private System.Windows.Forms.Label txtScore;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Timer tankDirectionSwitch;
+        private System.Windows.Forms.Timer timerTankDirectionSwitchAndResumeUpdate;
+        private System.Windows.Forms.Label label1;
     }
 }
 

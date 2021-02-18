@@ -26,10 +26,10 @@ namespace Tanks
                     int countOfTanks = int.Parse(args[2]);//Количество танков на поле
                     int countOfApples = int.Parse(args[3]);//Количество яблок на поле
                     int speed = int.Parse(args[4]);//Скорость передвижения объектов(задается для всех объектов сразу)
-                    Application.Run(new Form1(width, height, countOfTanks, countOfApples, speed));
+                    Application.Run(new Game(width, height, countOfTanks, countOfApples, speed));
                 }
                 else
-                    Application.Run(new Form1());
+                    Application.Run(new Game());
             }
             catch
             {

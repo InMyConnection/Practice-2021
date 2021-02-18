@@ -7,16 +7,17 @@ namespace Tanks.Entities
 {
 	public class Entity
 	{
-		public Size Dimension = new Size(40, 40);
-		public Point Position;
+		public int Width = 40;
+		public int Height = 40;
 		public Bitmap Image;
 		public string Name { get; set; }
-		public int X { get { return X; } set { X = Position.X; } }
-		public int Y { get { return Y; } set { Y = Position.Y; } }
+		public int X { get; set; }
+		public int Y { get; set; }
 
-		public Entity(Point pos)
+		public Entity(int x, int y)
 		{
-			Position = pos;
+			X = x;
+			Y = y;
 		}
 	}
 }

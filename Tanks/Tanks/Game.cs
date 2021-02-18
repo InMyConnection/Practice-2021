@@ -11,35 +11,36 @@ using Tanks.Entities;
 
 namespace Tanks
 {
-    public partial class Form1 : Form
+    public partial class Game : Form
     {
         Kolobok player;
+        Bitmap b;
+        Resume resume;
+        Random random = new Random();
+
         List<Tank> tanks;
         List<Apple> apples;
+        BrickWall[] walls;
         List<Bullet> bulletsOfPlayer;
         List<Bullet> bulletsOfTanks;
-        public static List<Entity> entities;
-        BrickWall[] walls;
-        Bitmap b;
-        Random random = new Random();
+        public List<Entity> entities;
+        
         int score;
         int width;
         int height;
         int countOfTanks;
         int countOfApples;
         int speed;
-        Form2 resume;
 
-        public Form1()
+        public Game()
         {
             InitializeComponent();
             countOfTanks = 5;
             countOfApples = 5;
             speed = 1;
-
         }
 
-        public Form1(int width, int height, int countOfTanks, int countOfApples, int speed)
+        public Game(int width, int height, int countOfTanks, int countOfApples, int speed)
         {
             InitializeComponent();
             this.width = width;
@@ -51,6 +52,7 @@ namespace Tanks
             this.Size = new Size(width + 181, height + 35);
             txtScore.Location = new Point(width, 9);
             buttonStart.Location = new Point(width + 40, 125);
+            label1.Location = new Point(width + 40, 200);
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
@@ -59,41 +61,47 @@ namespace Tanks
             pictureBox1.Image = b;
 
             walls = new BrickWall[3];
-            walls[0] = new BrickWall(new Point(50, 50), new Size(270, 40));
-            walls[1] = new BrickWall(new Point(50, 140), new Size(40, 200));
-            walls[2] = new BrickWall(new Point(140, 160), new Size(190, 40));
+            walls[0] = new BrickWall(50, 50, 270, 40);
+            walls[1] = new BrickWall(50, 140, 40, 200);
+            walls[2] = new BrickWall(140, 160, 190, 40);
 
-            player = new Kolobok(new Point(340, 340), speed);
+            player = new Kolobok(340, 340, speed);
 
             tanks = new List<Tank>();
             for (int i = 0, x = 0; i < countOfTanks; i++, x += 45)
             {
-                tanks.Add(new Tank(new Point(x, 0), speed));
+                tanks.Add(new Tank(x, 0, speed));
             }
 
             apples = new List<Apple>();
             for (int i = 0; i < countOfApples; i++)
             {
-                apples.Add(new Apple(GetRandomPosition()));
+                Point pos = GetRandomPosition();
+                apples.Add(new Apple(pos.X, pos.Y));
             }
 
             bulletsOfPlayer = new List<Bullet>();
             bulletsOfTanks = new List<Bullet>();
+
+            timerOfGame.Enabled = true;
+            timerTankDirectionSwitchAndResumeUpdate.Enabled = true;
+            score = 0;
+
             entities = new List<Entity>();
-            entities.Add(player);
             entities.AddRange(walls);
+            entities.Add(player);
             entities.AddRange(tanks);
             entities.AddRange(apples);
 
-            primaryTimer.Enabled = true;
-            tankDirectionSwitch.Enabled = true;
-            score = 0;
-            resume = new Form2();
+            resume = new Resume();
+            resume.StartPosition = FormStartPosition.Manual;
+            resume.Location = new Point(this.Location.X + this.Width, this.Location.Y);
+            resume.dataGridView1.DataSource = entities;
             resume.Show();
             this.Focus();
         }
 
-        private void primaryTimer_Tick(object sender, EventArgs e)
+        private void timerOfGame_Tick(object sender, EventArgs e)
         {
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             using (Graphics g = Graphics.FromImage(b))
@@ -103,26 +111,35 @@ namespace Tanks
                     walls[i].Render(g);
                 }
 
-                Point posOfPlayer = player.Position;
+                Point posOfPlayer = new Point(player.X, player.Y);
                 player.Move();
                 if (CheckCollisionsWithBounds(player))
-                    player.Position = posOfPlayer;
+                {
+                    player.X = posOfPlayer.X;
+                    player.Y = posOfPlayer.Y;
+                }
                 player.Render(g);
 
                 for (int i = 0; i < tanks.Count; i++)
                 {
-                    List<Point> posOfTank = tanks.Select(t => t.Position).ToList();
+                    List<Point> posOfTank = tanks.Select(t => new Point(t.X, t.Y)).ToList();
                     tanks[i].Move();
                     int anotherTank = CheckCollisionWithAnotherTank(i);
                     if (anotherTank >= 0)
                     {
-                        tanks[i].Position = posOfTank[i];
-                        tanks[anotherTank].Position = posOfTank[anotherTank];
+                        tanks[i].X = posOfTank[i].X;
+                        tanks[i].Y = posOfTank[i].Y;
+                        tanks[anotherTank].X = posOfTank[anotherTank].X;
+                        tanks[anotherTank].Y = posOfTank[anotherTank].Y;
                     }
                     if (tanks[i].Fire())
-                        bulletsOfTanks.Add(new Bullet(tanks[i].Position, tanks[i].direction, speed));
+                        bulletsOfTanks.Add(new Bullet(tanks[i].X, tanks[i].Y, tanks[i].direction, speed));
                     if (CheckCollisionsWithBounds(tanks[i]))
-                        tanks[i].Position = posOfTank[i];
+                    {
+                        tanks[i].X = posOfTank[i].X;
+                        tanks[i].Y = posOfTank[i].Y;
+                    }
+
                     tanks[i].Render(g);
                 }
 
@@ -152,12 +169,22 @@ namespace Tanks
             CheckCollisions();
         }
 
-        private void tankDirectionSwitch_Tick(object sender, EventArgs e)
+        private void timerTankDirectionSwitchAndResumeUpdate_Tick(object sender, EventArgs e)
         {
             for (int i = 0; i < tanks.Count; i++)
             {
                 tanks[i].GetDirection();
             }
+
+            resume.dataGridView1.DataSource = null;
+            entities.Clear();
+            entities.Add(player);
+            entities.AddRange(walls);
+            entities.AddRange(apples);
+            entities.AddRange(tanks);
+            entities.AddRange(bulletsOfTanks);
+            entities.AddRange(bulletsOfPlayer);
+            resume.dataGridView1.DataSource = entities;
         }
 
         private void keyIsDown(object sender, KeyEventArgs e)
@@ -180,7 +207,7 @@ namespace Tanks
             }
             if (e.KeyCode == Keys.B)
             {
-                bulletsOfPlayer.Add(new Bullet(player.Position, player.direction, speed));
+                bulletsOfPlayer.Add(new Bullet(player.X, player.Y, player.direction, speed));
             }
         }
 
@@ -190,7 +217,7 @@ namespace Tanks
             while (true)
             {
                 position = new Point((int)random.Next(0, 340), (int)random.Next(0, 340));
-                Entity entity = new Entity(position);
+                Entity entity = new Entity(position.X, position.Y);
                 if (CheckCollisionsWithBounds(entity))
                     position = new Point((int)random.Next(0, 340), (int)random.Next(0, 300));
                 else break;
@@ -200,19 +227,20 @@ namespace Tanks
 
         private void CheckCollisions()
         {
-            Rectangle playerRect = new Rectangle(player.Position, player.Dimension);
+            Rectangle playerRect = new Rectangle(player.X, player.Y , player.Width, player.Height);
             for (int i = 0; i < tanks.Count; i++)
             {
-                Rectangle tankRect = new Rectangle(tanks[i].Position, tanks[i].Dimension);
+                Rectangle tankRect = new Rectangle(tanks[i].X, tanks[i].Y, tanks[i].Width, tanks[i].Height);
                 if (Collide(playerRect, tankRect))
                 {
-                    primaryTimer.Enabled = false;
+                    timerOfGame.Enabled = false;
+                    resume.Close();
                     MessageBox.Show("GAME OVER!", "Battle city");
                 }
 
                 for (int j = 0; j < bulletsOfPlayer.Count; j++)
                 {
-                    Rectangle bulletsOfPlayerRect = new Rectangle(bulletsOfPlayer[j].Position, bulletsOfPlayer[j].Dimension);
+                    Rectangle bulletsOfPlayerRect = new Rectangle(bulletsOfPlayer[j].X, bulletsOfPlayer[j].Y, bulletsOfPlayer[j].Width, bulletsOfPlayer[j].Height);
                     if (Collide(tankRect, bulletsOfPlayerRect))
                     {
                         tanks.RemoveAt(i);
@@ -222,21 +250,23 @@ namespace Tanks
             }
             for (int i = 0; i < apples.Count; i++)
             {
-                Rectangle appleRect = new Rectangle(apples[i].Position, apples[i].Dimension);
+                Rectangle appleRect = new Rectangle(apples[i].X, apples[i].Y, apples[i].Width,apples[i].Height);
                 if (Collide(playerRect, appleRect))
                 {
                     apples.RemoveAt(i);
                     score++;
-                    apples.Add(new Apple(GetRandomPosition()));
+                    Point pos = GetRandomPosition();
+                    apples.Add(new Apple(pos.X, pos.Y));
                 }
             }
 
             for (int j = 0; j < bulletsOfTanks.Count; j++)
             {
-                Rectangle bulletsOfTanksRect = new Rectangle(bulletsOfTanks[j].Position, bulletsOfTanks[j].Dimension);
+                Rectangle bulletsOfTanksRect = new Rectangle(bulletsOfTanks[j].X, bulletsOfTanks[j].Y, bulletsOfTanks[j].Width, bulletsOfTanks[j].Height);
                 if (Collide(playerRect, bulletsOfTanksRect))
                 {
-                    primaryTimer.Enabled = false;
+                    timerOfGame.Enabled = false;
+                    resume.Close();
                     MessageBox.Show("GAME OVER!", "Battle city");
                 }
             }
@@ -244,20 +274,20 @@ namespace Tanks
 
         private bool CheckCollisionsWithBounds(Entity entity)
         {
-            Rectangle entityRect = new Rectangle(entity.Position, entity.Dimension);
+            Rectangle entityRect = new Rectangle(entity.X, entity.Y, entity.Width, entity.Height);
             for (int j = 0; j < walls.Length; j++)
             {
-                Rectangle wallRect = new Rectangle(walls[j].Position, walls[j].Dimension);
+                Rectangle wallRect = new Rectangle(walls[j].X, walls[j].Y, walls[j].Width, walls[j].Height);
                 if (Collide(entityRect, wallRect))
                     return true;
             }
-            if (entity.Position.X < 0)
+            if (entity.X < 0)
                 return true;
-            if (entity.Position.Y < 0)
+            if (entity.Y < 0)
                 return true;
-            if (entity.Position.X > pictureBox1.Width - entity.Dimension.Width)
+            if (entity.X > pictureBox1.Width - entity.Width)
                 return true;
-            if (entity.Position.Y > pictureBox1.Height - entity.Dimension.Height)
+            if (entity.Y > pictureBox1.Height - entity.Height)
                 return true;
             return false;
         }
@@ -269,13 +299,14 @@ namespace Tanks
             {
                 if (k == i)
                     continue;
-                Rectangle tankRect = new Rectangle(tanks[i].Position, tanks[i].Dimension);
-                Rectangle tank2Rect = new Rectangle(tanks[k].Position, tanks[k].Dimension);
+                Rectangle tankRect = new Rectangle(tanks[i].X, tanks[i].Y, tanks[i].Width, tanks[i].Height);
+                Rectangle tank2Rect = new Rectangle(tanks[k].X, tanks[k].Y, tanks[k].Width, tanks[k].Height);
                 if (Collide(tankRect, tank2Rect))
                 {
                     tanks[i].Rotate();
                     tanks[k].Rotate();
                     anotherTank = k;
+                    break;
                 }
             }
             return anotherTank;
@@ -285,90 +316,5 @@ namespace Tanks
         {
             return rect1.IntersectsWith(rect2);
         }
-
-
-
-
-
-
-        /*public void Draw()
-        {
-            pictureBox1.Size = new Size(400, 400);
-            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            this.Controls.Add(pictureBox1);
-
-            var b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            pictureBox1.Image = b;
-
-            using (var g = Graphics.FromImage(b))
-            {
-                using (var b1 = new Bitmap(@"Images\Apple.png")) g.DrawImage(b1, new Point(30, 30));
-                using (var b2 = new Bitmap(@"Images\Kolobok.png")) g.DrawImage(b2, new Point(90, 90));
-                using (var b3 = new Bitmap(@"Images\Bullet.png")) g.DrawImage(b3, new Point(130, 130));
-            }
-
-            pictureBox1.Invalidate();
-        }
-
-        public void DrawImage()
-        {
-            pictureBox1.Size = new Size(400, 400);
-            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            this.Controls.Add(pictureBox1);
-
-            Bitmap map = new Bitmap(380, 380);
-
-            Graphics g = Graphics.FromImage(map);
-            // Create image.
-            Image newImage = Image.FromFile("Up.png");
-
-            // Create coordinates for upper-left corner of image.
-            int x = 100;
-            int y = 100;
-
-            // Create rectangle for source image.
-            //RectangleF srcRect = new RectangleF(50, 50, 150, 150);
-            //GraphicsUnit units = GraphicsUnit.Pixel;
-
-            // Draw image to screen.
-            g.FillRectangle(Brushes.Orange, 40, 40, 320, 40);
-            g.FillRectangle(Brushes.Orange, 40, 120, 40, 200);
-            g.FillRectangle(Brushes.Orange, 140, 160, 220, 40);
-            g.DrawImage(newImage, x, y);
-            g.DrawImage(newImage, 200, 80);
-            g.DrawImage(newImage, 340, 340);
-
-            pictureBox1.Image = map;
-        }
-
-
-        public void CreateBitmapAtRuntime()
-        {
-            pictureBox1.Size = new Size(500, 360);
-            this.Controls.Add(pictureBox1);
-
-            //Bitmap map = new Bitmap(490, 360);
-
-            Bitmap image = new Bitmap("Up.png");
-            pictureBox1.Image = image;
-            pictureBox1.Invalidate();
-
-            //Graphics mapGraphics = Graphics.FromImage(map);
-
-            //mapGraphics.FillRectangle(Brushes.Orange, 20, 20, 450, 20);
-            //mapGraphics.FillRectangle(Brushes.Blue, 100, 100, 50, 50);
-            //mapGraphics.FillEllipse(Brushes.Yellow, 200, 200, 50, 50);
-
-            //pictureBox1.Image = map;
-
-            /*Bitmap b = new Bitmap(300, 300);
-            
-            using (Graphics g = Graphics.FromImage(b))
-            {
-                g.FillRectangle(Brushes.Transparent, 0, 0, b.Width, b.Height);
-                g.DrawEllipse(new Pen(Color.Red, 5), 0, 0, 300, 300);
-            }
-            pictureBox1.Image = b;
-        }*/
     }
 }
