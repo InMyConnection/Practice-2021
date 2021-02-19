@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tanks.Entities;
@@ -20,9 +21,11 @@ namespace Tanks
 
         List<Tank> tanks;
         List<Apple> apples;
-        BrickWall[] walls;
+        List<BrickWall> walls;
+        Water water;
         List<Bullet> bulletsOfPlayer;
         List<Bullet> bulletsOfTanks;
+        List<Detonation> detonations;
         public List<Entity> entities;
         
         int score;
@@ -60,10 +63,24 @@ namespace Tanks
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = b;
 
-            walls = new BrickWall[3];
-            walls[0] = new BrickWall(50, 50, 270, 40);
-            walls[1] = new BrickWall(50, 140, 40, 200);
-            walls[2] = new BrickWall(140, 160, 190, 40);
+            walls = new List<BrickWall>();
+            for(int i = 0; i < 13; i++)
+            {
+                walls.Add(new BrickWall(50 + i * 20, 50));
+                walls.Add(new BrickWall(50 + i * 20, 70));
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                walls.Add(new BrickWall(50, 140 + i * 20));
+                walls.Add(new BrickWall(70, 140 + i * 20));
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                walls.Add(new BrickWall(140 + i * 20, 160));
+                walls.Add(new BrickWall(140 + i * 20, 180));
+            }
+
+            water = new Water(160, 260, 160, 40);
 
             player = new Kolobok(340, 340, speed);
 
@@ -83,15 +100,19 @@ namespace Tanks
             bulletsOfPlayer = new List<Bullet>();
             bulletsOfTanks = new List<Bullet>();
 
+            detonations = new List<Detonation>();
+
             timerOfGame.Enabled = true;
             timerTankDirectionSwitchAndResumeUpdate.Enabled = true;
             score = 0;
 
             entities = new List<Entity>();
-            entities.AddRange(walls);
             entities.Add(player);
             entities.AddRange(tanks);
+            entities.AddRange(detonations);
             entities.AddRange(apples);
+            entities.Add(water);
+            entities.AddRange(walls);
 
             resume = new Resume();
             resume.StartPosition = FormStartPosition.Manual;
@@ -104,16 +125,19 @@ namespace Tanks
         private void timerOfGame_Tick(object sender, EventArgs e)
         {
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            CheckCollisions();
             using (Graphics g = Graphics.FromImage(b))
             {
-                for (int i = 0; i < walls.Length; i++)
+                for (int i = 0; i < walls.Count; i++)
                 {
                     walls[i].Render(g);
                 }
 
+                water.Render(g);
+
                 Point posOfPlayer = new Point(player.X, player.Y);
                 player.Move();
-                if (CheckCollisionsWithBounds(player))
+                if (CheckCollisionsWithBounds(player, out int number, out int number2))
                 {
                     player.X = posOfPlayer.X;
                     player.Y = posOfPlayer.Y;
@@ -134,12 +158,11 @@ namespace Tanks
                     }
                     if (tanks[i].Fire())
                         bulletsOfTanks.Add(new Bullet(tanks[i].X, tanks[i].Y, tanks[i].direction, speed));
-                    if (CheckCollisionsWithBounds(tanks[i]))
+                    if (CheckCollisionsWithBounds(tanks[i], out int numb, out int numb2))
                     {
                         tanks[i].X = posOfTank[i].X;
                         tanks[i].Y = posOfTank[i].Y;
                     }
-
                     tanks[i].Render(g);
                 }
 
@@ -152,21 +175,44 @@ namespace Tanks
                 {
                     bulletsOfPlayer[i].Move();
                     bulletsOfPlayer[i].Render(g);
-                    if (CheckCollisionsWithBounds(bulletsOfPlayer[i]))
+                    if (CheckCollisionsWithBounds(bulletsOfPlayer[i], out int numberOfWall, out int numberOfWall2))
+                    {
                         bulletsOfPlayer.RemoveAt(i);
+                        if (numberOfWall >= 0)
+                        {
+                            detonations.Add(new Detonation(walls[numberOfWall].X, walls[numberOfWall].Y));
+                            walls.RemoveAt(numberOfWall);
+                            if (numberOfWall2 > 0)
+                                walls.RemoveAt(numberOfWall2 - 1);
+                        }
+                    } 
                 }
 
                 for (int i = 0; i < bulletsOfTanks.Count; i++)
                 {
                     bulletsOfTanks[i].Move();
                     bulletsOfTanks[i].Render(g);
-                    if (CheckCollisionsWithBounds(bulletsOfTanks[i]))
+                    if (CheckCollisionsWithBounds(bulletsOfTanks[i], out int numbOfWall, out int numbOfWall2))
+                    {
                         bulletsOfTanks.RemoveAt(i);
+                        if (numbOfWall >= 0)
+                        {
+                            detonations.Add(new Detonation(walls[numbOfWall].X, walls[numbOfWall].Y));
+                            walls.RemoveAt(numbOfWall);
+                            if (numbOfWall2 > 0)
+                                walls.RemoveAt(numbOfWall2 - 1);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < detonations.Count; i++)
+                {
+                    detonations[i].Render(g);
                 }
             }
             pictureBox1.Image = b;
             txtScore.Text = "Apples: " + score;
-            CheckCollisions();
+            detonations.Clear();
         }
 
         private void timerTankDirectionSwitchAndResumeUpdate_Tick(object sender, EventArgs e)
@@ -179,11 +225,13 @@ namespace Tanks
             resume.dataGridView1.DataSource = null;
             entities.Clear();
             entities.Add(player);
-            entities.AddRange(walls);
-            entities.AddRange(apples);
             entities.AddRange(tanks);
             entities.AddRange(bulletsOfTanks);
             entities.AddRange(bulletsOfPlayer);
+            entities.AddRange(detonations);
+            entities.AddRange(apples);
+            entities.Add(water);
+            entities.AddRange(walls);
             resume.dataGridView1.DataSource = entities;
         }
 
@@ -218,7 +266,7 @@ namespace Tanks
             {
                 position = new Point((int)random.Next(0, 340), (int)random.Next(0, 340));
                 Entity entity = new Entity(position.X, position.Y);
-                if (CheckCollisionsWithBounds(entity))
+                if (CheckCollisionsWithBounds(entity, out int numb, out int numb2))
                     position = new Point((int)random.Next(0, 340), (int)random.Next(0, 300));
                 else break;
             }
@@ -235,7 +283,6 @@ namespace Tanks
                 {
                     timerOfGame.Enabled = false;
                     resume.Close();
-                    MessageBox.Show("GAME OVER!", "Battle city");
                 }
 
                 for (int j = 0; j < bulletsOfPlayer.Count; j++)
@@ -243,6 +290,7 @@ namespace Tanks
                     Rectangle bulletsOfPlayerRect = new Rectangle(bulletsOfPlayer[j].X, bulletsOfPlayer[j].Y, bulletsOfPlayer[j].Width, bulletsOfPlayer[j].Height);
                     if (Collide(tankRect, bulletsOfPlayerRect))
                     {
+                        detonations.Add(new Detonation(tanks[i].X, tanks[i].Y));
                         tanks.RemoveAt(i);
                         bulletsOfPlayer.RemoveAt(j);
                     } 
@@ -265,31 +313,57 @@ namespace Tanks
                 Rectangle bulletsOfTanksRect = new Rectangle(bulletsOfTanks[j].X, bulletsOfTanks[j].Y, bulletsOfTanks[j].Width, bulletsOfTanks[j].Height);
                 if (Collide(playerRect, bulletsOfTanksRect))
                 {
-                    timerOfGame.Enabled = false;
+                    detonations.Add(new Detonation(player.X, player.Y));
                     resume.Close();
-                    MessageBox.Show("GAME OVER!", "Battle city");
+                    timerOfGame.Enabled = false;
                 }
             }
         }
 
-        private bool CheckCollisionsWithBounds(Entity entity)
+        private bool CheckCollisionsWithBounds(Entity entity, out int numberOfWall, out int numberOfWall2)
         {
+            numberOfWall = -1;
+            numberOfWall2 = -1;
+            int j = 0;
+            bool collision = false;
+
             Rectangle entityRect = new Rectangle(entity.X, entity.Y, entity.Width, entity.Height);
-            for (int j = 0; j < walls.Length; j++)
+            for (; j < walls.Count; j++)
             {
                 Rectangle wallRect = new Rectangle(walls[j].X, walls[j].Y, walls[j].Width, walls[j].Height);
                 if (Collide(entityRect, wallRect))
-                    return true;
+                {
+                    numberOfWall = j;
+                    collision = true;
+                    break;
+                }
             }
+
+            for (j++; j < walls.Count; j++)
+            {
+                Rectangle wallRect = new Rectangle(walls[j].X, walls[j].Y, walls[j].Width, walls[j].Height);
+                if (Collide(entityRect, wallRect))
+                {
+                    numberOfWall2 = j;
+                }
+            }
+
+            if (!(entity is Bullet))
+            {
+                Rectangle waterRect = new Rectangle(water.X, water.Y, water.Width, water.Height);
+                if (Collide(entityRect, waterRect))
+                    collision = true;
+            }
+
             if (entity.X < 0)
-                return true;
+                collision = true;
             if (entity.Y < 0)
-                return true;
+                collision = true;
             if (entity.X > pictureBox1.Width - entity.Width)
-                return true;
+                collision = true;
             if (entity.Y > pictureBox1.Height - entity.Height)
-                return true;
-            return false;
+                collision = true;
+            return collision;
         }
 
         private int CheckCollisionWithAnotherTank(int i)

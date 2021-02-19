@@ -7,17 +7,17 @@ namespace Tanks.Entities
 {
     public class BrickWall : Entity
     {
-        public BrickWall(int x, int y, int width, int height) : base(x, y)
+        public BrickWall(int x, int y) : base(x, y)
         {
-            Width = width;
-            Height = height;
+            Width = 20;
+            Height = 20;
+            Image = new Bitmap(@"Images\BrickWall.png");
             Name = "Wall";
         }
 
         public void Render(Graphics g)
         {
-            g.FillRectangle(Brushes.Orange, X, Y, Width, Height);
+            g.DrawImage(Image, X, Y);
         }
-
     }
 }
