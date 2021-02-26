@@ -81,7 +81,8 @@ function update(dt) {
             pos: [canvas.width,
                   Math.random() * (canvas.height - 39)],
             sprite: new Sprite('img/sprites.png', [0, 78], [80, 39],
-                               6, [0, 1, 2, 3, 2, 1])
+                               6, [0, 1, 2, 3, 2, 1]),
+            dir: 'horizontal'
         });
     }
 
@@ -173,8 +174,8 @@ function updateEntities(dt) {
         switch(enemy.dir) {
         case 'up': enemy.pos[1] -= enemySpeed * dt; break;
         case 'down': enemy.pos[1] += enemySpeed * dt; break;
-        default:
-            enemy.pos[0] -= enemySpeed * dt;
+        case 'horizontal':
+            enemy.pos[0] -= enemySpeed * dt; break;
         }
         
         enemies[i].sprite.update(dt);
@@ -260,24 +261,33 @@ function checkCollisions() {
 
     for(var i=0; i<enemies.length; i++) {
         var pos = enemies[i].pos;
-        var size2 = enemies[i].sprite.size;
+        var size = enemies[i].sprite.size;
+        var cnt = 0;
 
         for(var j=0; j<megaliths.length; j++) {
             var pos2 = megaliths[j].pos;
             var size2 = megaliths[j].sprite.size;
 
             if(boxCollides(pos, size, pos2, size2)) {
-                if (enemies[i].dir === 'down' || pos2[1] < pos[1] - size[1]/3) {
-                    enemies[i].dir = 'down';
-                }
-                else {
+                if (enemies[i].dir === 'up'){
                     enemies[i].dir = 'up';
                 }
-                break;
+                else {
+                    enemies[i].dir = 'down';
+                    for(var k=0; k<megaliths.length; k++) {
+                        if (k === j) continue;
+                        var pos3 = megaliths[k].pos;
+                        var size3 = megaliths[k].sprite.size;
+                        if(boxCollides(pos, size, pos3, size3)) {
+                            enemies[i].dir = 'up';
+                        }
+                    }
+                }    
+                cnt++;
             }
-            else {
-                enemies[i].dir = 'horizontal';
-            }
+        }
+        if (cnt === 0) {
+            enemies[i].dir = 'horizontal';
         }
     }
 
@@ -306,7 +316,7 @@ function checkCollisions() {
 
             for (j=0; j<countOfNewMannas; j++) {
                 mannas.push({
-                    pos: getPositionOfMannas(),
+                    pos: getPositionOfMegalithsAndMannas([52, 41]),
                     sprite: new Sprite('img/sprites.png', [12, 162], [52, 41], 4, [0, 1])
                 });
             }
@@ -381,13 +391,13 @@ function reset() {
     for(var i=0; i<countOfMegaliths; i++) {
         if (Math.random() < 0.5) {
             megaliths.push({
-                pos: getPosition( [56, 54] ),
+                pos: getPositionOfMegalithsAndMannas([56, 54]),
                 sprite: new Sprite('img/sprites.png', [2, 212], [56, 54])
             });
         }
         else {
             megaliths.push({
-                pos: getPosition( [49, 43] ),
+                pos: getPositionOfMegalithsAndMannas([49, 43]),
                 sprite: new Sprite('img/sprites.png', [4, 273], [49, 43])
             });
         }
@@ -396,24 +406,24 @@ function reset() {
     countOfMannas = Math.floor(3 + Math.random() * 6);
     for(var i=0; i<countOfMannas; i++) {
         mannas.push({
-            pos: getPositionOfMannas(),
+            pos: getPositionOfMegalithsAndMannas([52, 41]),
             sprite: new Sprite('img/sprites.png', [12, 162], [52, 41], 4, [0, 1])
         });
     }
 }
 
-function getPositionOfMannas() {
-    var position = getPosition([52, 41]);
+function getPositionOfMegalithsAndMannas(dim) {
+    var position = getPosition(dim);
     for(var i=0; i<megaliths.length; i++) {
         var pos = megaliths[i].pos;
         var size = megaliths[i].sprite.size;
         while (true) {
-            if (!boxCollides(position, [52, 41], pos, size)) {
+            if (!boxCollides(position, dim, pos, size)) {
                 break;
             }
             else {
                 i = 0;
-                position = getPosition([52, 41]);
+                position = getPosition(dim);
             }
         }
     }
