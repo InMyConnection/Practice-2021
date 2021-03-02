@@ -5,14 +5,14 @@ using System.Drawing;
 
 namespace Tanks.Entities
 {
-    public class Water : Entity
+    class ConcreteWall : Entity
     {
-        public Water(int x, int y) : base(x, y)
+        public ConcreteWall(int x, int y) : base(x, y)
         {
             Width = 20;
             Height = 20;
-            Name = "Water";
-            Image = new Bitmap(Properties.Resources.Water);
+            Image = new Bitmap(Properties.Resources.ConcreteWall);
+            Name = "Concrete Wall";
         }
 
         public void Render(Graphics g)

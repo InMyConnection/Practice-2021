@@ -9,7 +9,7 @@ namespace Tanks.Entities
 	{
 		public Apple(int x, int y) : base(x, y)
 		{
-			Image = new Bitmap(@"Images\Apple.png");
+			Image = new Bitmap(Properties.Resources.Apple);
 			Name = "Apple";
 		}
 

@@ -9,7 +9,7 @@ namespace Tanks.Entities
 	{
 		public Detonation(int x, int y) : base(x, y)
 		{
-			Image = new Bitmap(@"Images\Detonation.png");
+			Image = new Bitmap(Properties.Resources.Detonation);
 			Name = "Detonation";
 		}
 

@@ -10,12 +10,14 @@ namespace Tanks.Entities
 		public int Speed;
 		public Direction direction;
 		Random random = new Random();
+		Bitmap[] images;
 
 		public Tank(int x, int y, int speed) : base(x, y)
 		{
 			Speed = speed;
 			GetDirection();
 			Name = "Tank";
+			GetImage();
 		}
 
 		public void Move()
@@ -23,22 +25,22 @@ namespace Tanks.Entities
 			if (direction == Direction.LEFT)
 			{
 				X -= Speed;
-				Image = new Bitmap(@"Images\Tank\Left.png");
+				Image = images[0];
 			}
 			if (direction == Direction.RIGHT)
 			{
 				X += Speed;
-				Image = new Bitmap(@"Images\Tank\Right.png");
+				Image = images[1];
 			}
 			if (direction == Direction.UP)
 			{
 				Y -= Speed;
-				Image = new Bitmap(@"Images\Tank\Up.png");
+				Image = images[2];
 			}
 			if (direction == Direction.DOWN)
 			{
 				Y += Speed;
-				Image = new Bitmap(@"Images\Tank\Down.png");
+				Image = images[3];
 			}
 		}
 
@@ -53,6 +55,15 @@ namespace Tanks.Entities
 				return true;
 			return false;
         }
+
+		public void GetImage()
+        {
+			images = new Bitmap[4];
+			images[0] = Properties.Resources.Left;
+			images[1] = Properties.Resources.Right;
+			images[2] = Properties.Resources.Up;
+			images[3] = Properties.Resources.Down;
+		}
 
 		public void Render(Graphics g)
 		{

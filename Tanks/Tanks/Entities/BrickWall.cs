@@ -11,8 +11,8 @@ namespace Tanks.Entities
         {
             Width = 20;
             Height = 20;
-            Image = new Bitmap(@"Images\BrickWall.png");
-            Name = "Wall";
+            Image = new Bitmap(Properties.Resources.BrickWall);
+            Name = "Brick Wall";
         }
 
         public void Render(Graphics g)

@@ -10,11 +10,14 @@ namespace Tanks.Entities
 		public int Speed;
 		public Direction direction;
 		Random random = new Random();
+		Bitmap[] images;
+
 		public Kolobok(int x, int y, int speed) : base(x, y)
 		{
 			Speed = speed;
-			direction = (Direction)random.Next(0, 4);
 			Name = "Player";
+			GetDirection();
+			GetImage();
 		}
 
 		public void Move()
@@ -22,23 +25,37 @@ namespace Tanks.Entities
 			if (direction == Direction.LEFT)
 			{
 				X -= Speed;
-				Image = new Bitmap(@"Images\Kolobok\Left.png");
+				Image = images[0];
 			}
 			if (direction == Direction.RIGHT)
 			{
 				X += Speed;
-				Image = new Bitmap(@"Images\Kolobok\Right.png");
+				Image = images[1];
 			}
 			if (direction == Direction.UP)
 			{
 				Y -= Speed;
-				Image = new Bitmap(@"Images\Kolobok\Up.png");
+				Image = images[2];
 			}
 			if (direction == Direction.DOWN)
 			{
 				Y += Speed;
-				Image = new Bitmap(@"Images\Kolobok\Down.png");
+				Image = images[3];
 			}
+		}
+
+		public void GetDirection()
+		{
+			direction = (Direction)random.Next(0, 4);
+		}
+
+		public void GetImage()
+		{
+			images = new Bitmap[4];
+			images[0] = Properties.Resources.pl_Left;
+			images[1] = Properties.Resources.pl_Right;
+			images[2] = Properties.Resources.pl_Up;
+			images[3] = Properties.Resources.pl_Down;
 		}
 
 		public void Render(Graphics g)

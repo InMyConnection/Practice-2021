@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tanks.Entities;
+using System.IO;
 
 namespace Tanks
 {
@@ -21,8 +22,9 @@ namespace Tanks
 
         List<Tank> tanks;
         List<Apple> apples;
-        List<BrickWall> walls;
-        Water water;
+        List<BrickWall> brickWalls;
+        List<ConcreteWall> concreteWalls;
+        List<Water> water;
         List<Bullet> bulletsOfPlayer;
         List<Bullet> bulletsOfTanks;
         List<Detonation> detonations;
@@ -34,6 +36,7 @@ namespace Tanks
         int countOfTanks;
         int countOfApples;
         int speed;
+        int countOfTanksToWin;
 
         public Game()
         {
@@ -60,34 +63,18 @@ namespace Tanks
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            countOfTanksToWin = 20;
             b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = b;
+            DownloadLevel(5);
 
-            walls = new List<BrickWall>();
-            for(int i = 0; i < 13; i++)
-            {
-                walls.Add(new BrickWall(50 + i * 20, 50));
-                walls.Add(new BrickWall(50 + i * 20, 70));
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                walls.Add(new BrickWall(50, 140 + i * 20));
-                walls.Add(new BrickWall(70, 140 + i * 20));
-            }
-            for (int i = 0; i < 9; i++)
-            {
-                walls.Add(new BrickWall(140 + i * 20, 160));
-                walls.Add(new BrickWall(140 + i * 20, 180));
-            }
-
-            water = new Water(160, 260, 160, 40);
-
-            player = new Kolobok(340, 340, speed);
+            player = new Kolobok(340, 480, speed);
 
             tanks = new List<Tank>();
             for (int i = 0, x = 0; i < countOfTanks; i++, x += 45)
             {
                 tanks.Add(new Tank(x, 0, speed));
+                countOfTanksToWin--;
             }
 
             apples = new List<Apple>();
@@ -103,7 +90,7 @@ namespace Tanks
             detonations = new List<Detonation>();
 
             timerOfGame.Enabled = true;
-            timerTankDirectionSwitchAndResumeUpdate.Enabled = true;
+            timerResumeUpdate.Enabled = true;
             score = 0;
 
             entities = new List<Entity>();
@@ -111,9 +98,12 @@ namespace Tanks
             entities.AddRange(tanks);
             entities.AddRange(detonations);
             entities.AddRange(apples);
-            entities.Add(water);
-            entities.AddRange(walls);
+            entities.AddRange(water);
+            entities.AddRange(brickWalls);
+            entities.AddRange(concreteWalls);
 
+            if (resume != null)
+                resume.Close();
             resume = new Resume();
             resume.StartPosition = FormStartPosition.Manual;
             resume.Location = new Point(this.Location.X + this.Width, this.Location.Y);
@@ -128,12 +118,20 @@ namespace Tanks
             CheckCollisions();
             using (Graphics g = Graphics.FromImage(b))
             {
-                for (int i = 0; i < walls.Count; i++)
+                for (int i = 0; i < brickWalls.Count; i++)
                 {
-                    walls[i].Render(g);
+                    brickWalls[i].Render(g);
                 }
 
-                water.Render(g);
+                for (int i = 0; i < concreteWalls.Count; i++)
+                {
+                    concreteWalls[i].Render(g);
+                }
+
+                for (int i = 0; i < water.Count; i++)
+                {
+                    water[i].Render(g);
+                }
 
                 Point posOfPlayer = new Point(player.X, player.Y);
                 player.Move();
@@ -141,6 +139,7 @@ namespace Tanks
                 {
                     player.X = posOfPlayer.X;
                     player.Y = posOfPlayer.Y;
+                    player.GetDirection();
                 }
                 player.Render(g);
 
@@ -148,6 +147,8 @@ namespace Tanks
                 {
                     List<Point> posOfTank = tanks.Select(t => new Point(t.X, t.Y)).ToList();
                     tanks[i].Move();
+                    if (random.Next(0, 100) < 1)
+                        tanks[i].GetDirection();
                     int anotherTank = CheckCollisionWithAnotherTank(i);
                     if (anotherTank >= 0)
                     {
@@ -162,6 +163,7 @@ namespace Tanks
                     {
                         tanks[i].X = posOfTank[i].X;
                         tanks[i].Y = posOfTank[i].Y;
+                        tanks[i].GetDirection();
                     }
                     tanks[i].Render(g);
                 }
@@ -180,10 +182,10 @@ namespace Tanks
                         bulletsOfPlayer.RemoveAt(i);
                         if (numberOfWall >= 0)
                         {
-                            detonations.Add(new Detonation(walls[numberOfWall].X, walls[numberOfWall].Y));
-                            walls.RemoveAt(numberOfWall);
+                            detonations.Add(new Detonation(brickWalls[numberOfWall].X, brickWalls[numberOfWall].Y));
+                            brickWalls.RemoveAt(numberOfWall);
                             if (numberOfWall2 > 0)
-                                walls.RemoveAt(numberOfWall2 - 1);
+                                brickWalls.RemoveAt(numberOfWall2 - 1);
                         }
                     } 
                 }
@@ -197,10 +199,10 @@ namespace Tanks
                         bulletsOfTanks.RemoveAt(i);
                         if (numbOfWall >= 0)
                         {
-                            detonations.Add(new Detonation(walls[numbOfWall].X, walls[numbOfWall].Y));
-                            walls.RemoveAt(numbOfWall);
+                            detonations.Add(new Detonation(brickWalls[numbOfWall].X, brickWalls[numbOfWall].Y));
+                            brickWalls.RemoveAt(numbOfWall);
                             if (numbOfWall2 > 0)
-                                walls.RemoveAt(numbOfWall2 - 1);
+                                brickWalls.RemoveAt(numbOfWall2 - 1);
                         }
                     }
                 }
@@ -213,15 +215,52 @@ namespace Tanks
             pictureBox1.Image = b;
             txtScore.Text = "Apples: " + score;
             detonations.Clear();
+            if (timerOfGame.Enabled == false)
+                MessageBox.Show("GAME OVER!", "Battle city");
+            if (tanks.Count == 0)
+            {
+                timerOfGame.Enabled = false;
+                MessageBox.Show("YOU WIN!", "Battle city");
+            }
         }
 
-        private void timerTankDirectionSwitchAndResumeUpdate_Tick(object sender, EventArgs e)
+        public void DownloadLevel(int currentLevel)
         {
-            for (int i = 0; i < tanks.Count; i++)
-            {
-                tanks[i].GetDirection();
-            }
+            string level = "_" + currentLevel.ToString();
+            string map = Properties.Resources.ResourceManager.GetObject(level).ToString();
 
+            string[] linesTileMap = map.Split('\n');
+
+            concreteWalls = new List<ConcreteWall>();
+            brickWalls = new List<BrickWall>();
+            water = new List<Water>();
+
+            int x = 0, y = 0;
+            foreach (string line in linesTileMap)
+            {
+                foreach (char c in line)
+                {
+                    switch (c)
+                    {
+                        case '#':
+                            brickWalls.Add(new BrickWall(x, y));
+                            break;
+                        case '@':
+                            concreteWalls.Add(new ConcreteWall(x, y));
+                            break;
+                        case '~':
+                            water.Add(new Water(x, y));
+                            break;
+                    }
+                    x += 20;
+                }
+                x = 0;
+                y += 20;
+            }
+        }
+
+        private void timerResumeUpdate_Tick(object sender, EventArgs e)
+        {
             resume.dataGridView1.DataSource = null;
             entities.Clear();
             entities.Add(player);
@@ -230,8 +269,9 @@ namespace Tanks
             entities.AddRange(bulletsOfPlayer);
             entities.AddRange(detonations);
             entities.AddRange(apples);
-            entities.Add(water);
-            entities.AddRange(walls);
+            entities.AddRange(water);
+            entities.AddRange(brickWalls);
+            entities.AddRange(concreteWalls);
             resume.dataGridView1.DataSource = entities;
         }
 
@@ -253,7 +293,7 @@ namespace Tanks
             {
                 player.direction = Direction.DOWN;
             }
-            if (e.KeyCode == Keys.B)
+            if (e.KeyCode == Keys.Space)
             {
                 bulletsOfPlayer.Add(new Bullet(player.X, player.Y, player.direction, speed));
             }
@@ -271,6 +311,22 @@ namespace Tanks
                 else break;
             }
             return position;
+        }
+
+        public int GetPositionOfTank()
+        {
+            int x = 0;
+            for (int i = 0; i < tanks.Count; i++)
+            {
+                Rectangle tankRect = new Rectangle(tanks[i].X, tanks[i].Y, tanks[i].Width, tanks[i].Height);
+                Rectangle newTankRect = new Rectangle(x, 0, tanks[i].Width, tanks[i].Height);
+                if (Collide(tankRect, newTankRect))
+                {
+                    x += 45;
+                    i = 0;
+                }
+            }
+            return x;
         }
 
         private void CheckCollisions()
@@ -293,6 +349,11 @@ namespace Tanks
                         detonations.Add(new Detonation(tanks[i].X, tanks[i].Y));
                         tanks.RemoveAt(i);
                         bulletsOfPlayer.RemoveAt(j);
+                        if (countOfTanksToWin > 0)
+                        {
+                            tanks.Add(new Tank(GetPositionOfTank(), 0, speed));
+                            countOfTanksToWin--;
+                        }
                     } 
                 }
             }
@@ -328,9 +389,20 @@ namespace Tanks
             bool collision = false;
 
             Rectangle entityRect = new Rectangle(entity.X, entity.Y, entity.Width, entity.Height);
-            for (; j < walls.Count; j++)
+
+            for (int i = 0; i < concreteWalls.Count; i++)
             {
-                Rectangle wallRect = new Rectangle(walls[j].X, walls[j].Y, walls[j].Width, walls[j].Height);
+                Rectangle wallRect = new Rectangle(concreteWalls[i].X, concreteWalls[i].Y, concreteWalls[i].Width, concreteWalls[i].Height);
+                if (Collide(entityRect, wallRect))
+                {
+                    collision = true;
+                    break;
+                }
+            }
+
+            for (; j < brickWalls.Count; j++)
+            {
+                Rectangle wallRect = new Rectangle(brickWalls[j].X, brickWalls[j].Y, brickWalls[j].Width, brickWalls[j].Height);
                 if (Collide(entityRect, wallRect))
                 {
                     numberOfWall = j;
@@ -339,9 +411,9 @@ namespace Tanks
                 }
             }
 
-            for (j++; j < walls.Count; j++)
+            for (j++; j < brickWalls.Count; j++)
             {
-                Rectangle wallRect = new Rectangle(walls[j].X, walls[j].Y, walls[j].Width, walls[j].Height);
+                Rectangle wallRect = new Rectangle(brickWalls[j].X, brickWalls[j].Y, brickWalls[j].Width, brickWalls[j].Height);
                 if (Collide(entityRect, wallRect))
                 {
                     numberOfWall2 = j;
@@ -350,9 +422,15 @@ namespace Tanks
 
             if (!(entity is Bullet))
             {
-                Rectangle waterRect = new Rectangle(water.X, water.Y, water.Width, water.Height);
-                if (Collide(entityRect, waterRect))
-                    collision = true;
+                for (int i = 0; i < water.Count; i++)
+                {
+                    Rectangle waterRect = new Rectangle(water[i].X, water[i].Y, water[i].Width, water[i].Height);
+                    if (Collide(entityRect, waterRect))
+                    {
+                        collision = true;
+                        break;
+                    }
+                }
             }
 
             if (entity.X < 0)
@@ -389,6 +467,12 @@ namespace Tanks
         private bool Collide(Rectangle rect1, Rectangle rect2)
         {
             return rect1.IntersectsWith(rect2);
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Space)
+                this.Focus();
         }
     }
 }

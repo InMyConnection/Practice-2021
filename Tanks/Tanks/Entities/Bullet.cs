@@ -12,8 +12,8 @@ namespace Tanks.Entities
 
         public Bullet(int x, int y, Direction dir, int speed) : base(x, y)
         {
-            Image = new Bitmap(@"Images\Bullet.png");
-            Speed = 2 * speed;
+            Image = new Bitmap(Properties.Resources.Bullet);
+			Speed = 2 * speed;
             direction = dir;
 			Width = 6;
 			Height = 6;
